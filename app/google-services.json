@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "284914616692",
+    "firebase_url": "https://cleenreed.firebaseio.com",
+    "project_id": "cleenreed",
+    "storage_bucket": "cleenreed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284914616692:android:03c5aa76ebadcaad",
+        "android_client_info": {
+          "package_name": "com.team5.cleenreed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284914616692-t64suv112puvug8lntqn0m7jnkl19a9n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.team5.cleenreed",
+            "certificate_hash": "615667ab51afc93d94c532a58764d64825bcd17b"
+          }
+        },
+        {
+          "client_id": "284914616692-semas42ljsrocpgh0nspkpn73s9pipde.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXp2fW11-rPwglHtHDL3bw0IQs2o285JA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284914616692-semas42ljsrocpgh0nspkpn73s9pipde.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
