@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -28,8 +27,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class MainActivity extends AppCompatActivity {
     private SignInButton signInButton;
     private Button signOutButton;
-    private EditText email;
-    private EditText password;
     private FirebaseAuth mAuth;
     private int RC_SIGN_IN = 1;
     private String TAG = "mainActivity";
@@ -41,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Set text vars to text fields & sign in button
-        email = (EditText) findViewById(R.id.editText);
-        password = (EditText) findViewById(R.id.editText2);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signOutButton = (Button) findViewById(R.id.sign_out_button);
 
@@ -85,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
+        signOutButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -132,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateUI(FirebaseUser user){
         signOutButton.setVisibility(View.VISIBLE);
+
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (acct != null) {
             String personName = acct.getDisplayName();

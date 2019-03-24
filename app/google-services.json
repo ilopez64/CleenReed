@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "284914616692-nt00qqbfjnkfeiaadhhak981lso6r096.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.team5.cleenreed",
+            "certificate_hash": "dffdc96668fba190f0e140074e147c1c65589277"
+          }
+        },
+        {
           "client_id": "284914616692-t64suv112puvug8lntqn0m7jnkl19a9n.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
