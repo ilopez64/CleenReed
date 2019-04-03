@@ -26,3 +26,10 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+buildscript {
+    respositories{
+        maven { url "https://chaquo.co/maven"}
+    }
+    classpath "com.chaquo.python:gradle:6.0.0"
+}

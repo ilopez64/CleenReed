@@ -1,9 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.chaquo.python' // added (sent link) -moises
 
 android {
     compileSdkVersion 28
+
     defaultConfig {
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
         applicationId "com.team5.cleenreed"
         minSdkVersion 15
         targetSdkVersion 28
@@ -16,6 +21,22 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    flavorDimensions "abi"
+    productFlavors {
+        arm {
+            dimensions "abi"
+            ndk { abiFilters "armeabi-v7a" }
+        }
+        x86 {
+            dimension "abi"
+            ndk { abiFilters "x86" }
+        }
+
+    }
+
+    python{
+        buildPython "/usr/bin/python"
     }
 }
 
