@@ -10,11 +10,15 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
         applicationId "com.team5.cleenreed"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        python{
+            buildPython "/usr/bin/python"
+        }
     }
     buildTypes {
         release {
@@ -25,7 +29,7 @@ android {
     flavorDimensions "abi"
     productFlavors {
         arm {
-            dimensions "abi"
+            dimension "abi"
             ndk { abiFilters "armeabi-v7a" }
         }
         x86 {
@@ -35,9 +39,7 @@ android {
 
     }
 
-    python{
-        buildPython "/usr/bin/python"
-    }
+
 }
 
 dependencies {

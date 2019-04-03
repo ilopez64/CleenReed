@@ -28,8 +28,10 @@ task clean(type: Delete) {
 }
 
 buildscript {
-    respositories{
-        maven { url "https://chaquo.co/maven"}
+    repositories{
+        maven { url "https://chaquo.com/maven"}
     }
-    classpath "com.chaquo.python:gradle:6.0.0"
+    dependencies {
+        classpath "com.chaquo.python:gradle:6.0.0"
+    }
 }
