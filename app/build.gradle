@@ -1,9 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.chaquo.python' // added (sent link) -moises
 
 android {
     compileSdkVersion 28
     defaultConfig {
+        ndk { abiFilters "armeabi-v7a", "x86" }
+
         applicationId "com.team5.cleenreed"
         minSdkVersion 15
         targetSdkVersion 28
