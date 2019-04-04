@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -97,14 +96,12 @@ public class MainActivity extends AppCompatActivity {
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
-                // ...
             }
         }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -121,14 +118,12 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this,"you are not abel to log in to Google",Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
+
     private void updateUI(FirebaseUser user){
         signOutButton.setVisibility(View.VISIBLE);
-
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (acct != null) {
             String personName = acct.getDisplayName();
@@ -139,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
             Uri personPic = acct.getPhotoUrl();
 
             Toast.makeText(this, "Name of user: " + personName + ". User ID is: " + personID, Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(this, Actitvity2.class);
+            //intent.putExtra(EXTRA_TEXT, text);
+            startActivity(intent);
 
         }
     }
