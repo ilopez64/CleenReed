@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,6 +29,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class MainActivity extends AppCompatActivity {
     private SignInButton signInButton;
     private Button signOutButton;
+    private EditText freq;
+    private TextView text;
+    private Button cont;
+    private int freqInt;
     private FirebaseAuth mAuth;
     private int RC_SIGN_IN = 1;
     private String TAG = "mainActivity";
@@ -40,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         // Set text vars to text fields & sign in button
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signOutButton = (Button) findViewById(R.id.sign_out_button);
+        cont = (Button) findViewById(R.id.button2);
+        freq = (EditText) findViewById(R.id.editText2);
+        text = (TextView) findViewById(R.id.textView2);
+
 
         // Get shared instance of FirebaseAuth object
         mAuth = FirebaseAuth.getInstance();
@@ -67,11 +77,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        cont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String val = freq.getText().toString();
+                freqInt = Integer.parseInt(val);
+                Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+                intent.putExtra("default_index",0);
+                startActivity(intent);
+            }
+        } );
+
     }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+        signInButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -80,7 +102,11 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
+        text.setVisibility(View.GONE);
+        freq.setVisibility(View.GONE);
+        cont.setVisibility(View.GONE);
         signOutButton.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -123,7 +149,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser user){
-        signOutButton.setVisibility(View.VISIBLE);
+        //signOutButton.setVisibility(View.VISIBLE);
+
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (acct != null) {
             String personName = acct.getDisplayName();
@@ -135,9 +162,15 @@ public class MainActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Name of user: " + personName + ". User ID is: " + personID, Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(this, Actitvity2.class);
+            text.setVisibility(View.VISIBLE);
+            freq.setVisibility(View.VISIBLE);
+            cont.setVisibility(View.VISIBLE);
+
+
+
+            //Intent intent = new Intent(this, Activity2.class);
             //intent.putExtra(EXTRA_TEXT, text);
-            startActivity(intent);
+            //startActivity(intent);
 
         }
     }
