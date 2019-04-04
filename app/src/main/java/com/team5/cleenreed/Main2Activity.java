@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.api.services.gmail.Gmail.Users.Messages;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Main2Activity extends AppCompatActivity {
 
@@ -35,17 +37,13 @@ public class Main2Activity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
 
-    //TextView name = (TextView) findViewById(R.id.textview1);
-    //mAuth = FirebaseAuth.getInstance();
-    //FirebaseUser user = mAuth.getCurrentUser();
-    //String email = user.getEmail();
-    //name.setText(email);
 
     private FirebaseAuth mAuth;
     private GoogleSignInAccount acct;
     private TextView name;
     private static final String[] SCOPES = {GmailScopes.GMAIL_READONLY};
     private String email;
+
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -79,6 +77,12 @@ public class Main2Activity extends AppCompatActivity {
         int value = intent.getIntExtra("value", -1);
 
         mViewPager.setCurrentItem(value);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String email = user.getEmail();
+        //name.setText(email);
+
 
 
     }
