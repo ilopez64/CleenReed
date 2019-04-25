@@ -57,8 +57,11 @@ public class MainActivity extends AppCompatActivity {
         if (!Python.isStarted()){
             Python.start(new AndroidPlatform(this));
         }
+
         Python py = Python.getInstance();
         PyObject txtR = py.getModule("txtR");
+        txtR.callAttr("main","sample.txt");
+
         // Set text vars to text fields & sign in button
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signOutButton = (Button) findViewById(R.id.sign_out_button);
