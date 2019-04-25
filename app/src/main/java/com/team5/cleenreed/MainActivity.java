@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//Google/Firebase APIs
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,17 +26,26 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+//Chaquopy
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 
 public class MainActivity extends AppCompatActivity {
     private SignInButton signInButton;
     private Button signOutButton;
     private EditText freq;
     private TextView text;
+    private TextView text2;
     private Button cont;
     private int freqInt;
     private FirebaseAuth mAuth;
     private int RC_SIGN_IN = 1;
     private String TAG = "mainActivity";
+
     GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -43,16 +53,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Python API start up
+        if (!Python.isStarted()){
+            Python.start(new AndroidPlatform(this));
+        }
+        Python py = Python.getInstance();
+        PyObject txtR = py.getModule("txtR");
         // Set text vars to text fields & sign in button
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signOutButton = (Button) findViewById(R.id.sign_out_button);
         cont = (Button) findViewById(R.id.button2);
         freq = (EditText) findViewById(R.id.editText2);
-        text = (TextView) findViewById(R.id.textView2);
+        text = (TextView) findViewById(R.id.textView);
+        text2 = (TextView) findViewById(R.id.textView2);
 
 
         // Get shared instance of FirebaseAuth object
         mAuth = FirebaseAuth.getInstance();
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = db.getReference("/");
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -82,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String val = freq.getText().toString();
                 freqInt = Integer.parseInt(val);
-                Intent intent = new Intent(MainActivity.this,Main2Activity.class);
-                intent.putExtra("default_index",0);
+                Intent intent = new Intent(MainActivity.this,TabbedActivity.class);
+                intent.putExtra("freq",freqInt);
                 startActivity(intent);
             }
         } );
@@ -101,12 +120,16 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-        text.setVisibility(View.GONE);
-        freq.setVisibility(View.GONE);
-        cont.setVisibility(View.GONE);
-        signOutButton.setVisibility(View.GONE);
-
+        if (currentUser != null){
+            Intent intent = new Intent(this,TabbedActivity.class);
+            startActivity(intent);
+        } else{
+            updateUI(currentUser);
+            text2.setVisibility(View.GONE);
+            freq.setVisibility(View.GONE);
+            cont.setVisibility(View.GONE);
+            signOutButton.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -149,8 +172,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser user){
-        //signOutButton.setVisibility(View.VISIBLE);
-
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (acct != null) {
             String personName = acct.getDisplayName();
@@ -160,16 +181,14 @@ public class MainActivity extends AppCompatActivity {
             String personID = acct.getId();
             Uri personPic = acct.getPhotoUrl();
 
-            Toast.makeText(this, "Name of user: " + personName + ". User ID is: " + personID, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Name of user: " + personName + ". User ID is: " + personID, Toast.LENGTH_SHORT).show();
 
-            text.setVisibility(View.VISIBLE);
+            text.setVisibility(View.GONE);
+            text2.setVisibility(View.VISIBLE);
             freq.setVisibility(View.VISIBLE);
             cont.setVisibility(View.VISIBLE);
 
-
-
-            //Intent intent = new Intent(this, Activity2.class);
-            //intent.putExtra(EXTRA_TEXT, text);
+            //Intent intent = new Intent(this, TabbedActivity.class);
             //startActivity(intent);
 
         }
