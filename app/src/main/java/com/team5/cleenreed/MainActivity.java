@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         }
         Python py = Python.getInstance();
         PyObject txtR = py.getModule("txtR");
+        txtR.callAttr("main");
+
+
+
         // Set text vars to text fields & sign in button
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signOutButton = (Button) findViewById(R.id.sign_out_button);
@@ -101,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String val = freq.getText().toString();
                 freqInt = Integer.parseInt(val);
-                Intent intent = new Intent(MainActivity.this,TabbedActivity.class);
+                Intent intent = new Intent(MainActivity.this,EmailsActivity.class);
                 intent.putExtra("freq",freqInt);
                 startActivity(intent);
             }
@@ -121,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null){
-            Intent intent = new Intent(this,TabbedActivity.class);
+            Intent intent = new Intent(this,EmailsActivity.class);
             startActivity(intent);
         } else{
             updateUI(currentUser);
