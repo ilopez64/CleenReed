@@ -21,6 +21,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.services.gmail.GmailScopes;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private int RC_SIGN_IN = 1;
     private String TAG = "mainActivity";
+    private GoogleSignInOptions gso;
+    private static final String[] SCOPES = {GmailScopes.GMAIL_READONLY,GmailScopes.GMAIL_MODIFY,GmailScopes.GMAIL_METADATA};
+
 
     GoogleSignInClient mGoogleSignInClient;
 
@@ -83,8 +87,6 @@ public class MainActivity extends AppCompatActivity {
             .requestEmail()
             .build();
 
-        mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
-
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 String val = freq.getText().toString();
                 freqInt = Integer.parseInt(val);
                 Intent intent = new Intent(MainActivity.this,EmailsActivity.class);
-                intent.putExtra("freq",freqInt);
                 startActivity(intent);
             }
         } );
