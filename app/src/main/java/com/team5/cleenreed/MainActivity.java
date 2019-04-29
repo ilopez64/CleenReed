@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.services.gmail.GmailScopes;
@@ -48,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
     private String TAG = "mainActivity";
     private GoogleSignInOptions gso;
     private static final String[] SCOPES = {GmailScopes.GMAIL_READONLY,GmailScopes.GMAIL_MODIFY,GmailScopes.GMAIL_METADATA};
-
-
     GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -64,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         Python py = Python.getInstance();
         PyObject txtR = py.getModule("txtR");
         txtR.callAttr("main");
-
 
 
         // Set text vars to text fields & sign in button
@@ -85,7 +83,10 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
+            .requestScopes(new Scope(GmailScopes.GMAIL_METADATA),new Scope(GmailScopes.GMAIL_READONLY),new Scope(GmailScopes.GMAIL_MODIFY))
             .build();
+
+         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -95,7 +95,7 @@ public class EmailsActivity extends AppCompatActivity {
         mAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         email = mAccount.getEmail();
 
-        String token = mAccount.getIdToken();
+
 
         //Gmail gmail = new Gmail.Builder(HTTP_TRANSPORT,JSON_FACTORY, credential).setApplicationName(TAG).build();
 
