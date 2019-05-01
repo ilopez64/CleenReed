@@ -63,10 +63,10 @@ dependencies {
 
     //Gmail API
     implementation 'pub.devrel:easypermissions:0.3.0'
-    implementation('com.google.api-client:google-api-client-android:1.22.0') {
+    implementation('com.google.api-client:google-api-client-android:1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation('com.google.apis:google-api-services-gmail:v1-rev83-1.22.0') {
+    implementation('com.google.apis:google-api-services-gmail:v1-rev83-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation 'javax.mail:javax.mail-api:1.5.3'

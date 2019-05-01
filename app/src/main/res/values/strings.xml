@@ -10,7 +10,10 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_tabbed">TabbedActivity</string>
-    
+    <string name="server_client_id">284914616692-t9sk5uj5hhsmd0vbl4gi47gdf1orvr5r.apps.googleusercontent.com</string>
+
+
+
     <string-array name="android_versions">
         <item>Cupcake</item>
         <item>Donut</item>

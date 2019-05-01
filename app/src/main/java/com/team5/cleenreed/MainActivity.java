@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,16 +38,12 @@ import com.chaquo.python.android.AndroidPlatform;
 public class MainActivity extends AppCompatActivity {
     private SignInButton signInButton;
     private Button signOutButton;
-    private EditText freq;
     private TextView text;
-    private TextView text2;
-    private Button cont;
-    private int freqInt;
     private FirebaseAuth mAuth;
     private int RC_SIGN_IN = 1;
     private String TAG = "mainActivity";
     private GoogleSignInOptions gso;
-    private static final String[] SCOPES = {GmailScopes.GMAIL_READONLY,GmailScopes.GMAIL_MODIFY,GmailScopes.GMAIL_METADATA};
+    private static final String[] SCOPES = {GmailScopes.GMAIL_READONLY,GmailScopes.GMAIL_MODIFY};
     GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -68,10 +63,8 @@ public class MainActivity extends AppCompatActivity {
         // Set text vars to text fields & sign in button
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signOutButton = (Button) findViewById(R.id.sign_out_button);
-        cont = (Button) findViewById(R.id.button2);
-        freq = (EditText) findViewById(R.id.editText2);
         text = (TextView) findViewById(R.id.textView);
-        text2 = (TextView) findViewById(R.id.textView2);
+
 
 
         // Get shared instance of FirebaseAuth object
@@ -83,10 +76,13 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
-            .requestScopes(new Scope(GmailScopes.GMAIL_METADATA),new Scope(GmailScopes.GMAIL_READONLY),new Scope(GmailScopes.GMAIL_MODIFY))
-            .build();
+            .requestScopes(
+                    new Scope(GmailScopes.GMAIL_READONLY),
+                    new Scope(GmailScopes.GMAIL_MODIFY),
+                    new Scope(GmailScopes.GMAIL_LABELS))
+                .build();
 
-         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,22 +99,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        cont.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String val = freq.getText().toString();
-                freqInt = Integer.parseInt(val);
-                Intent intent = new Intent(MainActivity.this,EmailsActivity.class);
-                startActivity(intent);
-            }
-        } );
-
     }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-        signInButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -131,9 +116,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         } else{
             updateUI(currentUser);
-            text2.setVisibility(View.GONE);
-            freq.setVisibility(View.GONE);
-            cont.setVisibility(View.GONE);
             signOutButton.setVisibility(View.GONE);
         }
     }
@@ -189,13 +171,8 @@ public class MainActivity extends AppCompatActivity {
 
             //Toast.makeText(this, "Name of user: " + personName + ". User ID is: " + personID, Toast.LENGTH_SHORT).show();
 
-            text.setVisibility(View.GONE);
-            text2.setVisibility(View.VISIBLE);
-            freq.setVisibility(View.VISIBLE);
-            cont.setVisibility(View.VISIBLE);
-
-            //Intent intent = new Intent(this, TabbedActivity.class);
-            //startActivity(intent);
+            Intent intent = new Intent(this, EmailsActivity.class);
+            startActivity(intent);
 
         }
     }
