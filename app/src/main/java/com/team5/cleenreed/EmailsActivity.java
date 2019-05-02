@@ -1,6 +1,7 @@
 package com.team5.cleenreed;
 
 import android.accounts.Account;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 
 import java.io.ByteArrayInputStream;
@@ -44,6 +47,7 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 
+
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -51,6 +55,7 @@ import javax.mail.internet.MimeMessage;
 import static android.util.Base64.DEFAULT;
 
 public class EmailsActivity extends AppCompatActivity {
+    private Button settingsButton;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private List<String> list;
@@ -74,19 +79,20 @@ public class EmailsActivity extends AppCompatActivity {
     };
     private static final String TAG = "CleenReed";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emails);
+        settingsButton = (Button) findViewById(R.id.settings_button);
 
         //Fetch Firebase User
         mAuth = FirebaseAuth.getInstance();
         mAuth.getCurrentUser();
 
-        // Get last Signed in Account From Main Activity Sign in
+        // Get last Signed in Google Account
         mAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         email = mAccount.getEmail();
+        System.out.println(email);
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
@@ -119,6 +125,14 @@ public class EmailsActivity extends AppCompatActivity {
         PyObject txtR = py.getModule("txtR");
         txtR.callAttr("main");
         */
+
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EmailsActivity.this,SettingsActivity.class);
+                startActivity(intent);
+            }
+        } );
     }
 
 
@@ -159,16 +173,16 @@ public class EmailsActivity extends AppCompatActivity {
         protected List<String> doInBackground(Void... params) {
             try {
                 messages = getDataFromAPI();
-                for (int i = 0; i < 10; i++){
+                for (int i = 0; i < messages.size(); i++){
                     Message message1 = getMessage(mService, userId, messages.get(i).getId());
-                    byte[] emailBytes = Base64.decode(message1.getPayload().getParts().get(0).getBody().getData().trim().toString(),DEFAULT);
-                    String body = new String(emailBytes,"UTF-8");
+                    //byte[] emailBytes = Base64.decode(message1.getPayload().getParts().get(0).getBody().getData().trim(),DEFAULT);
+                    //String body = new String(emailBytes,"UTF-8");
                     //Properties props = new Properties();
                     //Session session = Session.getDefaultInstance(props, null);
 
                     //MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
                     //mimeMessages.add(email);
-                    System.out.println(body);
+                    //System.out.println(body);
                     res.add(message1.getSnippet());
                 }
 

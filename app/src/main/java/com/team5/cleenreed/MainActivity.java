@@ -1,5 +1,7 @@
 package com.team5.cleenreed;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -36,10 +38,11 @@ import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
 public class MainActivity extends AppCompatActivity {
+    private static Context context;
     private SignInButton signInButton;
-    private Button signOutButton;
     private TextView text;
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private int RC_SIGN_IN = 1;
     private String TAG = "mainActivity";
     private GoogleSignInOptions gso;
@@ -51,15 +54,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        context = this;
+
         // Set text vars to text fields & sign in button
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        signOutButton = (Button) findViewById(R.id.sign_out_button);
         text = (TextView) findViewById(R.id.textView);
 
-        // Get shared instance of FirebaseAuth object
         mAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = db.getReference("/");
+
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -80,14 +82,6 @@ public class MainActivity extends AppCompatActivity {
             }
         } );
 
-        signOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                signOutButton.setVisibility(View.GONE);
-            }
-        });
-
     }
 
     private void signIn() {
@@ -104,8 +98,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this,EmailsActivity.class);
             startActivity(intent);
         } else{
+            // Get shared instance of FirebaseAuth object
+            mAuth = FirebaseAuth.getInstance();
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = db.getReference("/");
+
             updateUI(currentUser);
-            signOutButton.setVisibility(View.GONE);
+
         }
     }
 
@@ -150,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user){
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+
         if (acct != null) {
             String personName = acct.getDisplayName();
             String personGivenName = acct.getGivenName();
