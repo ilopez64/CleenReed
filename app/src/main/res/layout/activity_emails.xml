@@ -8,11 +8,37 @@
 
 
     <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/recyclerview"
-        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="691dp"
 
-        />
+        android:layout_alignTop="@+id/toolbar2"
+        android:layout_marginTop="40dp"
+        android:scrollbars="vertical" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="77dp"
+        android:layout_height="38dp"
+        android:layout_alignStart="@+id/toolbar2"
+        android:layout_alignLeft="@+id/toolbar2"
+        android:layout_alignEnd="@+id/toolbar2"
+        android:layout_alignRight="@+id/toolbar2"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="306dp"
+        android:layout_marginLeft="306dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_marginBottom="693dp"
+        android:text="Button" />
 
 </RelativeLayout>

@@ -51,21 +51,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Python API start up
-        if (!Python.isStarted()){
-            Python.start(new AndroidPlatform(this));
-        }
-        Python py = Python.getInstance();
-        PyObject txtR = py.getModule("txtR");
-        txtR.callAttr("main");
-
-
         // Set text vars to text fields & sign in button
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signOutButton = (Button) findViewById(R.id.sign_out_button);
         text = (TextView) findViewById(R.id.textView);
-
-
 
         // Get shared instance of FirebaseAuth object
         mAuth = FirebaseAuth.getInstance();

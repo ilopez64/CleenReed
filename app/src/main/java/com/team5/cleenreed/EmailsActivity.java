@@ -1,33 +1,34 @@
 package com.team5.cleenreed;
 
 import android.accounts.Account;
-import android.media.session.MediaSession;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Properties;
 
 
 //Firebase APIs
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-
-//Chaquopy
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.google.api.client.util.StringUtils;
+import com.google.api.services.gmail.model.MessagePart;
+import com.google.firebase.auth.FirebaseAuth;
+
+//Chaquopy
 
 //Gmail imports
 import com.google.api.client.util.ExponentialBackOff;
@@ -42,15 +43,18 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
-import javax.mail.*;
+
+import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
+import static android.util.Base64.DEFAULT;
 
 public class EmailsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private List<String> list;
-    List<String> a;
+    static List<String> a;
     private RecyclerAdapter adapter;
     private List<String> list2;
 
@@ -101,61 +105,46 @@ public class EmailsActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        new MakeRequestTask(this,mCredential,"16a6b9c99f4dd272").execute();
+        list = Arrays.asList(getResources().getStringArray(R.array.emailIDs));
+        new MakeRequestTask(this,mCredential,labels).execute();
 
-
+        //a.add(email);
         list = Arrays.asList(getResources().getStringArray(R.array.android_versions));
-        adapter = new RecyclerAdapter(a);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(adapter);
 
+        //Python API start up
+        /*if (!Python.isStarted()){
+            Python.start(new AndroidPlatform(this));
+        }
+        Python py = Python.getInstance();
+        PyObject txtR = py.getModule("txtR");
+        txtR.callAttr("main");
+        */
     }
+
 
     @Override
     public void onStart() {
         super.onStart();
-
-    }
-
-    public static List<Message> listMessagesWithLabels(Gmail service, String userId,
-                                                       List<String> labelIds) throws IOException {
-        ListMessagesResponse response = service.users().messages().list(userId)
-                .setLabelIds(labelIds).execute();
-
-        List<Message> messages = new ArrayList<Message>();
-        while (response.getMessages() != null) {
-            messages.addAll(response.getMessages());
-            if (response.getNextPageToken() != null) {
-                String pageToken = response.getNextPageToken();
-                response = service.users().messages().list(userId).setLabelIds(labelIds)
-                        .setPageToken(pageToken).execute();
-            } else {
-                break;
-            }
-        }
-
-        for (Message message : messages) {
-            System.out.println(message.toPrettyString());
-        }
-
-        return messages;
     }
 
     public void addA(String text){
-        a.add(text);
+        EmailsActivity.a.add(text);
         System.out.print(text);
     }
 
     // Async task to fetch emails
-    private class MakeRequestTask extends AsyncTask<Void, Void, String> {
+    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
 
         private com.google.api.services.gmail.Gmail mService = null;
         private Exception mLastError = null;
         private EmailsActivity activity;
-        private String messageId;
-        private String response;
+        private List<String> label;
+        private List<Message> messages = new ArrayList<>();
+        private List<String> res = new ArrayList<>();
+        private List<MimeMessage> mimeMessages = new ArrayList<>();
+        String userId = "me";
 
-        MakeRequestTask(EmailsActivity activity, GoogleAccountCredential credential, String id) {
+        MakeRequestTask(EmailsActivity activity, GoogleAccountCredential credential, List<String> labels) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.gmail.Gmail.Builder(
@@ -163,13 +152,27 @@ public class EmailsActivity extends AppCompatActivity {
                     .setApplicationName(getResources().getString(R.string.app_name))
                     .build();
             this.activity = activity;
-            messageId = id;
+            label = labels;
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected List<String> doInBackground(Void... params) {
             try {
-                return getDataFromApi();
+                messages = getDataFromAPI();
+                for (int i = 0; i < 10; i++){
+                    Message message1 = getMessage(mService, userId, messages.get(i).getId());
+                    byte[] emailBytes = Base64.decode(message1.getPayload().getParts().get(0).getBody().getData().trim().toString(),DEFAULT);
+                    String body = new String(emailBytes,"UTF-8");
+                    //Properties props = new Properties();
+                    //Session session = Session.getDefaultInstance(props, null);
+
+                    //MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+                    //mimeMessages.add(email);
+                    System.out.println(body);
+                    res.add(message1.getSnippet());
+                }
+
+                return res;
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -177,19 +180,34 @@ public class EmailsActivity extends AppCompatActivity {
             }
         }
 
-        private String getDataFromApi() {
-            String userId = "me";
-            Message message;
-            //MimeMessage mimeMessage;
-            String response = "";
+        private List<Message> getDataFromAPI() throws IOException {
+            List<Message> messages = new ArrayList<>();
             try {
-                message = getMessage(mService, userId, messageId);
-                response = message.getSnippet();
-
+                messages = getImportant(mService, userId, label);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return response;
+            return messages;
+        }
+
+        // Method to return all emails with IMPORTANT label
+        private List<Message> getImportant(Gmail service,
+                                          String userId,
+                                          List<String> labelIds)
+                throws IOException {
+            ListMessagesResponse responses = service.users().messages().list(userId)
+                    .setLabelIds(labelIds).execute();
+            while (responses.getMessages() != null) {
+                messages.addAll(responses.getMessages());
+                if (responses.getNextPageToken() != null) {
+                    String pageToken = responses.getNextPageToken();
+                    responses = service.users().messages().list(userId).setLabelIds(labelIds)
+                            .setPageToken(pageToken).execute();
+                } else {
+                    break;
+                }
+            }
+            return messages;
         }
 
         // Method to get email
@@ -199,14 +217,46 @@ public class EmailsActivity extends AppCompatActivity {
                 throws IOException {
             // GMail's official method to get email with oauth2.0
             Message message = service.users().messages().get(userId, messageId).execute();
-            System.out.println("Message snippet: " + message.getSnippet());
             return message;
         }
 
-        protected void onPostExecute(String result){
+        // Method to get email content
+        /*private String getContent(Message message) {
+            StringBuilder stringBuilder = new StringBuilder();
+            try {
+                getPlainTextFromMessageParts(message.getPayload().getParts(), stringBuilder);
+                byte[] bodyBytes = Base64.decode(stringBuilder.toString(),DEFAULT);
+                String text = new String(bodyBytes, "UTF-8");
+                return text;
+            } catch (UnsupportedEncodingException e) {
+                //logger.error("UnsupportedEncoding: " + e.toString());
+                return message.getSnippet();
+            }
+        }*/
+
+        // method to get email body
+        /*private void getPlainTextFromMessageParts(List<MessagePart> messageParts, StringBuilder stringBuilder) {
+            for (MessagePart messagePart : messageParts) {
+                if (messagePart.getMimeType().equals("text/plain")) {
+                    stringBuilder.append(messagePart.getBody().getData());
+                }
+
+                if (messagePart.getParts() != null) {
+                    getPlainTextFromMessageParts(messagePart.getParts(), stringBuilder);
+                }
+            }
+        }*/
+
+        @Override
+        protected void onPostExecute(List<String> result){
             Log.d(TAG, "p execute");
-            super.onPostExecute(result);
-            EmailsActivity.this.addA(result);
+            for (String num : result) {
+                System.out.println(num);
+                addA(num);
+            }
+            adapter = new RecyclerAdapter(a);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setAdapter(adapter);
             Log.d(TAG,"done executing");
 
         }

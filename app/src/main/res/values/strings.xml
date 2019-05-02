@@ -12,7 +12,13 @@
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="server_client_id">284914616692-t9sk5uj5hhsmd0vbl4gi47gdf1orvr5r.apps.googleusercontent.com</string>
 
+    <string-array name="emailIDs">
 
+    </string-array>
+
+    <string-array name="emailBodies">
+
+    </string-array>
 
     <string-array name="android_versions">
         <item>Cupcake</item>
